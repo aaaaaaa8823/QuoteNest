@@ -14,13 +14,13 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="nav-brand">
-                <Link to="/">Цитатник</Link>
+                <Link to="/">QuoteNest</Link>
             </div>
 
             <div className="nav-links">
                 <Link to="/">Рекомендации</Link>
                 <Link to="/create">Создать цитату</Link>
-                <Link to="/my-quotes">Мои цитаты</Link>
+                <Link to="/saved">Мои цитаты</Link>
             </div>
 
             <div className="nav-user">

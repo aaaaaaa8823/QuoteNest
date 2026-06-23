@@ -9,7 +9,6 @@ import com.cherry.quotenest.service.QuoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-//НАДО СДЕЛАТЬ КОНТРОЛЛЕР!!!
 import java.util.List;
 
 @Service

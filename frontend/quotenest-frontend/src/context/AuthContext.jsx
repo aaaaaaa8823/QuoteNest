@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
                 const userData = await authService.getCurrentUser();
                 setUser(userData);
             } catch (err) {
+                console.log("Пользователь не авторизован (ожидаемое поведение)");
                 setUser(null);
             } finally {
                 setLoading(false);

@@ -40,4 +40,21 @@ public class QuoteController {
         quoteService.deleteQuote(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/save")
+    public ResponseEntity<Void> saveQuote(@PathVariable Long id) {
+        quoteService.saveQuote(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/unsave")
+    public ResponseEntity<Void> unsaveQuote(@PathVariable Long id) {
+        quoteService.unsaveQuote(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/saved")
+    public ResponseEntity<List<QuoteResponse>> getSavedQuotes() {
+        return ResponseEntity.ok(quoteService.getSavedQuotes());
+    }
 }

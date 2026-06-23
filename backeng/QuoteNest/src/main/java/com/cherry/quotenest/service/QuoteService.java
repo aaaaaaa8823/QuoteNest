@@ -10,4 +10,7 @@ public interface QuoteService {
     List<QuoteResponse> getAllQuotes();
     QuoteResponse updateQuote(Long id, QuoteRequest request);
     void deleteQuote(Long id);
+    void saveQuote(Long id);
+    void unsaveQuote(Long id);
+    List<QuoteResponse> getSavedQuotes();
 }

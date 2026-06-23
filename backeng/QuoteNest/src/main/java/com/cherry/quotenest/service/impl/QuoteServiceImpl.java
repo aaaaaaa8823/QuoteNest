@@ -4,19 +4,22 @@ import com.cherry.quotenest.dto.request.QuoteRequest;
 import com.cherry.quotenest.mapper.QuoteMapper;
 import com.cherry.quotenest.dto.response.QuoteResponse;
 import com.cherry.quotenest.model.Quote;
+import com.cherry.quotenest.model.User;
 import com.cherry.quotenest.repository.QuoteRepository;
+import com.cherry.quotenest.repository.UserRepository;
 import com.cherry.quotenest.service.QuoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class QuoteServiceImpl implements QuoteService {
 
     private final QuoteRepository quoteRepository;
     private final QuoteMapper quoteMapper;
+    private final UserRepository userRepository;
 
     @Override
     public QuoteResponse createQuote(QuoteRequest request) {
@@ -60,5 +63,42 @@ public class QuoteServiceImpl implements QuoteService {
             throw new RuntimeException("Quote not found with id: " + id);
         }
         quoteRepository.deleteById(id);
+    }
+
+    @Override
+    public void saveQuote(Long id) {
+        User currentUser = getCurrentUser();
+        Quote quote = quoteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quote not found with id: " + id));
+
+        // Добавляем цитату в сохраненные
+        currentUser.getSavedQuotes().add(quote);
+        userRepository.save(currentUser);
+    }
+
+    @Override
+    public void unsaveQuote(Long id) {
+        User currentUser = getCurrentUser();
+        Quote quote = quoteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quote not found with id: " + id));
+
+        currentUser.getSavedQuotes().remove(quote);
+        userRepository.save(currentUser);
+    }
+
+    @Override
+    public List<QuoteResponse> getSavedQuotes() {
+        User currentUser = getCurrentUser();
+        return currentUser.getSavedQuotes().stream()
+                .map(quoteMapper::toResponse)
+                .toList();
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 }

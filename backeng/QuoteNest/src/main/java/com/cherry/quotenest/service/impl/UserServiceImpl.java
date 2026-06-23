@@ -6,8 +6,10 @@ import com.cherry.quotenest.security.JwtService;
 import com.cherry.quotenest.dto.request.LoginRequest;
 import com.cherry.quotenest.dto.request.RegisterRequest;
 import com.cherry.quotenest.dto.response.AuthResponse;
+import com.cherry.quotenest.dto.response.CurrentUserResponse;
 import com.cherry.quotenest.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +49,27 @@ public class UserServiceImpl implements UserService {
         }
 
         return jwtService.generateToken(user.getEmail());
+    }
+
+    @Override
+    public CurrentUserResponse getCurrentUser() {
+        // Получаем текущего пользователя из SecurityContext
+        org.springframework.security.core.Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Пользователь не авторизован");
+        }
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        return new CurrentUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
     }
 }

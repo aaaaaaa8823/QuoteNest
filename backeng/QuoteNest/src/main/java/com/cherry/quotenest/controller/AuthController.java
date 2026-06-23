@@ -3,6 +3,7 @@ package com.cherry.quotenest.controller;
 import com.cherry.quotenest.dto.request.LoginRequest;
 import com.cherry.quotenest.dto.request.RegisterRequest;
 import com.cherry.quotenest.dto.response.AuthResponse;
+import com.cherry.quotenest.dto.response.CurrentUserResponse;
 import com.cherry.quotenest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +54,12 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CurrentUserResponse> getCurrentUser() {
+        CurrentUserResponse user = userService.getCurrentUser();
+        return ResponseEntity.ok(user);
     }
 
 }

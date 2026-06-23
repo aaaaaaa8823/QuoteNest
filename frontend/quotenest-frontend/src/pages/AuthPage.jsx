@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../api/authService';
 import './AuthPage.css';
 
@@ -16,6 +17,8 @@ function AuthPage() {
 
     const { login } = useAuth();
 
+    const navigate = useNavigate();
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -27,12 +30,14 @@ function AuthPage() {
 
         try {
             if (isLogin) {
-                const response = await authService.login({
+                await authService.login({
                     email: formData.email,
                     password: formData.password
                 });
-                login({ email: formData.email });
-                alert('Успешный вход!');
+
+                const userData = await authService.getCurrentUser();
+                login(userData);
+                navigate('/home');
             } else {
                 await authService.register({
                     username: formData.username,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { quoteService } from '../api/quoteService';
 import Navbar from '../components/Navbar';
+import QuoteModal from '../components/QuoteModаl';
 import './Home.css';
 
 function Home() {
@@ -10,6 +11,7 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState({});
     const [savedIds, setSavedIds] = useState(new Set());
+      const [selectedQuote, setSelectedQuote] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -82,6 +84,14 @@ function Home() {
         }
     };
 
+    const handleQuoteClick = (quote) => {
+        setSelectedQuote(quote);
+    };
+
+    const closeModal = () => {
+        setSelectedQuote(null);
+    };
+    
 return (
         <>
             <Navbar />
@@ -93,19 +103,26 @@ return (
                 ) : (
                     <div className="quotes-list">
                         {quotes.map(quote => (
-                            <div key={quote.id} className="quote-card">
+                            <div 
+                                key={quote.id} 
+                                className="quote-card"
+                                onClick={() => handleQuoteClick(quote)} 
+                            >
                                 <p>"{quote.text}"</p>
                                 <small>— {quote.author}</small>
                                 {quote.source && <div className="quote-source">Источник: {quote.source}</div>}
                                 {quote.createdByUsername && (
-                                <div className="quote-meta">
-                                    Опубликовал: <strong>{quote.createdByUsername}</strong>
-                                </div>
+                                    <div className="quote-meta">
+                                        Опубликовал: <strong>{quote.createdByUsername}</strong>
+                                    </div>
                                 )}
                                 <div className="quote-actions">
                                     <button 
                                         className={`save-btn ${quote.saved ? 'saved' : ''}`}
-                                        onClick={() => quote.saved ? handleUnsave(quote.id) : handleSave(quote.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); 
+                                            quote.saved ? handleUnsave(quote.id) : handleSave(quote.id);
+                                        }}
                                         disabled={saving[quote.id]}
                                     >
                                         {saving[quote.id] ? (
@@ -122,6 +139,10 @@ return (
                     </div>
                 )}
             </div>
+
+            {selectedQuote && (
+                <QuoteModal quote={selectedQuote} onClose={closeModal} />
+            )}
         </>
     );
 }

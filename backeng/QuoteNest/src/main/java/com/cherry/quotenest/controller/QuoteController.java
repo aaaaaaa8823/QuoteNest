@@ -57,4 +57,9 @@ public class QuoteController {
     public ResponseEntity<List<QuoteResponse>> getSavedQuotes() {
         return ResponseEntity.ok(quoteService.getSavedQuotes());
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<QuoteResponse>> getMyQuotes() {
+        return ResponseEntity.ok(quoteService.getMyQuotes());
+    }
 }

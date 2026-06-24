@@ -17,5 +17,6 @@ public class QuoteResponse {
     private String author;
     private String source;
     private Long createdById;
+    private String createdByUsername;
     private LocalDateTime createdAt;
 }

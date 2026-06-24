@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private  final UserRepository userRepository;
-    private  final PasswordEncoder passwordEncoder;
-    private final  JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
-    public AuthResponse register(RegisterRequest request){
-        if(userRepository.existsByEmail(request.getEmail())){
+    public AuthResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(("Пользователь с таким email уже существует"));
         }
         if (userRepository.existsByUsername(request.getUsername())) {

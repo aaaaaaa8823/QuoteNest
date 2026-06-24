@@ -13,7 +13,9 @@ public interface QuoteMapper {
     Quote toEntity(QuoteRequest request);
 
     @Mapping(target = "createdById", source = "createdBy.id")
+    @Mapping(target = "createdByUsername", source = "createdBy.username")
     QuoteResponse toResponse(Quote quote);
+
 
     void updateQuoteFromRequest(QuoteRequest request, @MappingTarget Quote quote);
 }

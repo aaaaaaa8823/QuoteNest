@@ -26,7 +26,7 @@ function Navbar() {
             <div className="nav-user">
                 {user ? (
                     <>
-                        <span>{user.email}</span>
+                        <span>{user.username}</span>
                         <button onClick={handleLogout}>Выйти</button>
                     </>
                 ) : (

@@ -12,5 +12,6 @@ public interface QuoteService {
     void deleteQuote(Long id);
     void saveQuote(Long id);
     void unsaveQuote(Long id);
+    List<QuoteResponse> getMyQuotes();
     List<QuoteResponse> getSavedQuotes();
 }

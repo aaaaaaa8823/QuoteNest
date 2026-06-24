@@ -1,5 +1,5 @@
 // src/pages/CreateQuote.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { quoteService } from '../api/quoteService';
 import Navbar from '../components/Navbar';
@@ -11,10 +11,36 @@ function CreateQuote() {
         author: '',
         source: ''
     });
+
+    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [myQuotes, setMyQuotes] = useState([]);
+    const [loadingQuotes, setLoadingQuotes] = useState(true);
+    const [deleting, setDeleting] = useState({});
     const navigate = useNavigate();
+
+      useEffect(() => {
+        fetchMyQuotes();
+    }, []);
+
+    const fetchMyQuotes = async () => {
+        setLoadingQuotes(true);
+        try {
+            const data = await quoteService.getMyQuotes();
+            if (Array.isArray(data)) {
+                setMyQuotes(data);
+            } else {
+                setMyQuotes([]);
+            }
+        } catch (err) {
+            console.error('Ошибка загрузки цитат:', err);
+            setMyQuotes([]);
+        } finally {
+            setLoadingQuotes(false);
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,18 +53,40 @@ function CreateQuote() {
         setSuccess(false);
 
         try {
-            await quoteService.create(formData);
+            const newQuote = await quoteService.create(formData);
             setSuccess(true);
-            // Очищаем форму
+            setMyQuotes(prev => [newQuote, ...prev]);
             setFormData({ text: '', author: '', source: '' });
             setTimeout(() => {
-                navigate('/home');
+                setSuccess(false);
             }, 2000);
         } catch (err) {
             setError(err.response?.data?.message || 'Ошибка при создании цитаты');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDelete = async (quoteId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить эту цитату?')) {
+            return;
+        }
+
+        setDeleting(prev => ({ ...prev, [quoteId]: true }));
+        try {
+            await quoteService.delete(quoteId);
+            setMyQuotes(prev => prev.filter(q => q.id !== quoteId));
+        } catch (err) {
+            console.error('Ошибка удаления:', err);
+            alert('Не удалось удалить цитату');
+        } finally {
+            setDeleting(prev => ({ ...prev, [quoteId]: false }));
+        }
+    };
+
+
+    const isMyQuote = (quote) => {
+        return true; 
     };
 
     return (
@@ -107,6 +155,36 @@ function CreateQuote() {
                             </button>
                         </div>
                     </form>
+                </div>
+
+                <div className="my-quotes-section">
+                    <h3>Мои цитаты</h3>
+                    
+                    {loadingQuotes ? (
+                        <p>Загрузка...</p>
+                    ) : myQuotes.length === 0 ? (
+                        <p className="no-quotes">Вы еще не создали ни одной цитаты</p>
+                    ) : (
+                        <div className="my-quotes-list">
+                            {myQuotes.map(quote => (
+                                <div key={quote.id} className="quote-card">
+                                    <p>"{quote.text}"</p>
+                                    <small>— {quote.author}</small>
+                                    {quote.source && <div className="quote-source">Источник: {quote.source}</div>}
+                                    
+                                    <div className="quote-actions">
+                                        <button 
+                                            className="delete-btn"
+                                            onClick={() => handleDelete(quote.id)}
+                                            disabled={deleting[quote.id]}
+                                        >
+                                            {deleting[quote.id] ? '...' : 'Удалить'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </>

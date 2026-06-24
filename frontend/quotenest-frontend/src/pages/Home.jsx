@@ -97,7 +97,11 @@ return (
                                 <p>"{quote.text}"</p>
                                 <small>— {quote.author}</small>
                                 {quote.source && <div className="quote-source">Источник: {quote.source}</div>}
-                                
+                                {quote.createdByUsername && (
+                                <div className="quote-meta">
+                                    Опубликовал: <strong>{quote.createdByUsername}</strong>
+                                </div>
+                                )}
                                 <div className="quote-actions">
                                     <button 
                                         className={`save-btn ${quote.saved ? 'saved' : ''}`}

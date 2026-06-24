@@ -45,7 +45,6 @@ function AuthPage() {
                     password: formData.password,
                     fullName: formData.fullName
                 });
-                alert('Регистрация успешна! Теперь войдите.');
                 setIsLogin(true); 
             }
         } catch (err) {

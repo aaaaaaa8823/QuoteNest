@@ -11,4 +11,5 @@ export const quoteService = {
      saveQuote: (id) => handleResponse(api.post(`/quotes/${id}/save`)),
     unsaveQuote: (id) => handleResponse(api.delete(`/quotes/${id}/unsave`)),
     getSavedQuotes: () => handleResponse(api.get('/quotes/saved')),
+    getMyQuotes: () => handleResponse(api.get('/quotes/my')),
 };

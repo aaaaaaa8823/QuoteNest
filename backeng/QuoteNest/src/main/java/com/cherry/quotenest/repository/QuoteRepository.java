@@ -1,10 +1,13 @@
 package com.cherry.quotenest.repository;
 
 import com.cherry.quotenest.model.Quote;
+import com.cherry.quotenest.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-public interface QuoteRepository extends JpaRepository<Quote, Long>{
+import java.util.List;
 
-    //потом добавить свои методы тоже
+@Repository
+public interface QuoteRepository extends JpaRepository<Quote, Long> {
+    List<Quote> findByCreatedBy(User user);
 }

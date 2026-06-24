@@ -24,8 +24,8 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     public QuoteResponse createQuote(QuoteRequest request) {
         Quote quote = quoteMapper.toEntity(request);
-        // createdBy привяжем позже, когда добавим Security
-        //СПРОСИТЬ НАСЧЕТ ЭТОГО
+        User currentUser = getCurrentUser();
+        quote.setCreatedBy(currentUser);
 
         Quote savedQuote = quoteRepository.save(quote);
         return quoteMapper.toResponse(savedQuote);
@@ -59,9 +59,14 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public void deleteQuote(Long id) {
-        if (!quoteRepository.existsById(id)) {
-            throw new RuntimeException("Quote not found with id: " + id);
+        User currentUser = getCurrentUser();
+        Quote quote = quoteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quote not found with id: " + id));
+
+        if (quote.getCreatedBy() == null || !quote.getCreatedBy().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("You can only delete your own quotes");
         }
+
         quoteRepository.deleteById(id);
     }
 
@@ -100,5 +105,12 @@ public class QuoteServiceImpl implements QuoteService {
 
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+    @Override
+    public List<QuoteResponse> getMyQuotes() {
+        User currentUser = getCurrentUser();
+        return quoteRepository.findByCreatedBy(currentUser).stream()
+                .map(quoteMapper::toResponse)
+                .toList();
     }
 }
